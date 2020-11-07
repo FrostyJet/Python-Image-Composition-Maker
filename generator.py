@@ -1,6 +1,7 @@
 import requests
 from lxml import html
 from PIL import Image
+import sys
 
 searchEngine = "yahoo"
 
@@ -32,30 +33,44 @@ cols = 5
 ideal_width = int(input("Width? \r\n"))
 ideal_height = int(input("Height? \r\n"))
 
+srcs = []
+for img in images:
+    if searchEngine == "google" or searchEngine == 'yahoo':
+        imgSrc = img.get("src")
+    elif searchEngine == "yandex":
+        imgSrc = 'https:' + img.get("src")
+
+    if not imgSrc: 
+        continue
+
+    print(imgSrc)
+    srcs.append(imgSrc)
+
+if len(imgSrc) < 1: 
+    print("Could not find anything")
+    sys.exit()
+
 imgIds = []
 for i in range(0, cols):
     row = []
     for j in range(0, cols):
         index = cols * i + j
-        if index >= len(images):
+        if index >= len(srcs):
             break
 
         row.append(0)
-        img = images[index]
-
-        if searchEngine == "google" or searchEngine == 'yahoo':
-            imgSrc = img.get("src")
-        elif searchEngine == "yandex":
-            imgSrc = 'https:' + img.get("src")
-
-        print(imgSrc)
-        if not imgSrc: continue
+        imgSrc = srcs[index]
 
         result = requests.get(imgSrc)
 
-        file = open("sources/" + str(index) + ".png", "wb")
-        file.write(result.content)
-        file.close()
+        try:
+            file = open("sources/" + str(index) + ".png", "wb")
+            file.write(result.content)
+            file.close()
+        except:
+            print("Skipping missing file")
+            continue
+
         pass
     imgIds.append(row)
     pass
@@ -69,7 +84,11 @@ for i in range(0, cols):
         if index >= len(images):
             break
 
-        gridSection = Image.open("sources/" + str(index) + ".png")
+        try:
+            gridSection = Image.open("sources/" + str(index) + ".png")
+        except:
+            print("Skipping missing file")
+            continue
 
         x = 0
         y = 0
