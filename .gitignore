@@ -1,4 +1,4 @@
 ./sources/*
 !/sources/.gitkeep
-./composition.source.html
-./composition.png
+composition.source.html
+composition.png
