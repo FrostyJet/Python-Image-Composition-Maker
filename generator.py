@@ -2,7 +2,7 @@ import requests
 from lxml import html
 from PIL import Image
 
-searchEngine = "yandex"
+searchEngine = "yahoo"
 
 query = input("What are you looking for? \r\n")
 
